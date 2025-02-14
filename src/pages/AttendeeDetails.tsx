@@ -128,9 +128,10 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
 
         if (Object.values(validationErrors).some(error => error)) return;
 
-        if (onRegister) {
-            onRegister(formData);
-        }
+        if (typeof onRegister === "function") {
+    onRegister(formData);
+}
+
     };
 
     return (

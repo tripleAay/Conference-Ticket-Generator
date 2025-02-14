@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+
 
 
 interface TicketType {
@@ -15,16 +15,9 @@ interface TicketSelectionProps {
 
 const EventCard = () => {
   return (
-    <motion.div
+    <div
       className="w-full max-w-lg rounded-2xl bg-[#04292b] p-6 text-center text-white shadow-lg border border-[#064d4d] relative overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl"
-      whileHover={{
-        x: [-3, 3, -3],
-        transition: {
-          duration: 0.2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }
-      }}
+
     >
       <h2 className="text-3xl font-bold mb-2 tracking-wide font-[Cinzel]">
         Techember Fest '25
@@ -39,7 +32,7 @@ const EventCard = () => {
         <span className="text-gray-500">||</span>
         <span>March 15, 2025 | 7:00 PM</span>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -48,6 +41,13 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
   const [quantity, setQuantity] = useState<number>(1);
   const [error, setError] = useState<string>("");
   const [touched, setTouched] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    selectedOption: "",
+    name: "",
+    email: "",
+    image: "",
+  });
+
 
   const ticketTypes: TicketType[] = [
     { type: "REGULAR", price: "Free", left: 20 },
@@ -55,24 +55,24 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
     { type: "VVIP", price: "$150", left: 20 },
   ];
 
- 
+
   useEffect(() => {
-    const savedTicketData = localStorage.getItem("ticketDetails");
-    if (savedTicketData) {
-      try {
-        const { selectedTicket: savedTicket, quantity: savedQuantity } = JSON.parse(savedTicketData);
-        const matchedTicket = ticketTypes.find(ticket => ticket.type === savedTicket);
-        if (matchedTicket) {
-          setSelectedTicket(matchedTicket);
-          setQuantity(savedQuantity);
-        }
-      } catch (error) {
-        console.error("Error loading saved ticket data:", error);
+    const ticketData = localStorage.getItem("ticketDetails");
+
+    if (ticketData) {
+      const parsedData = JSON.parse(ticketData);
+      const foundTicket = ticketTypes.find((ticket) => ticket.type === parsedData.selectedTicket);
+
+      if (foundTicket) {
+        setSelectedTicket(foundTicket);
+        setQuantity(parsedData.quantity);
       }
     }
   }, []);
 
-  
+
+
+
   useEffect(() => {
     if (touched && selectedTicket) {
       const ticketData = {
@@ -184,9 +184,16 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
           </select>
         </div>
 
-        <button className="w-full py-3 bg-[#1C8DA5] rounded-lg text-black text-sm" onClick={handleProceed}>
+        <button
+          className={`w-full py-3 rounded-lg text-black text-sm transition-all
+    ${selectedTicket ? "bg-[#1C8DA5] hover:bg-[#147a89]" : "bg-gray-500 cursor-not-allowed"}
+  `}
+          onClick={handleProceed}
+          disabled={!selectedTicket}
+        >
           Proceed
         </button>
+
       </div>
     </div>
   );
