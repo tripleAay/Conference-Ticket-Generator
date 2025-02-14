@@ -1,36 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface FormDataState {
-    name: string;
-    email: string;
-    image: string | null;
-    selectedOption: string | null;
-}
-
-interface ErrorsState {
-    name?: string;
-    email?: string;
-    image?: string;
-}
-
-interface AttendeeDetailsProps {
-    onRegister?: (data: FormDataState) => void;
-}
-
-const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
+const AttendeeDetails = ({ onRegister }) => {
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState<FormDataState>({
+    const [formData, setFormData] = useState({
         name: "",
         email: "",
         image: null,
         selectedOption: null
     });
 
-    const [errors, setErrors] = useState<ErrorsState>({});
+    const [errors, setErrors] = useState({});
     const [uploading, setUploading] = useState(false);
-    const [touched, setTouched] = useState<Record<string, boolean>>({});
+    const [touched, setTouched] = useState({});
 
     useEffect(() => {
         try {
@@ -51,7 +34,7 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         localStorage.setItem("attendeeFormData", JSON.stringify(formData));
     }, [formData]);
 
-    const validateField = (name: string, value: string | null): string => {
+    const validateField = (name, value) => {
         if (!value) value = "";
 
         switch (name) {
@@ -67,7 +50,7 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
@@ -79,7 +62,7 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         }
     };
 
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleBlur = (e) => {
         const { name, value } = e.target;
         setTouched(prev => ({ ...prev, [name]: true }));
         setErrors(prev => ({
@@ -88,7 +71,7 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         }));
     };
 
-    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
@@ -118,10 +101,10 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
-        const validationErrors: ErrorsState = {
+        const validationErrors = {
             name: validateField("name", formData.name),
             email: validateField("email", formData.email),
         };
