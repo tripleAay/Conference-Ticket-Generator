@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 
-
 interface TicketType {
   type: string;
   price: string;

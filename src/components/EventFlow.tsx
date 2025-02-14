@@ -2,19 +2,19 @@ import AttendeeDetails from "../pages/AttendeeDetails";
 import TicketSelection from "../components/TicketSelection";
 import { useState } from "react";
 
-const EventFlow: React.FC = () => {
-  const [step, setStep] = useState<number>(1);
+type EventFlowProps = {
+  onRegister: (data: any) => void; // Define onRegister as a prop
+};
 
-  const handleRegister = (data: any): void => {
-    console.log("User registered:", data);
-  };
+const EventFlow: React.FC<EventFlowProps> = ({ onRegister }) => {
+  const [step, setStep] = useState<number>(1);
 
   return (
     <div>
       {step === 1 ? (
         <TicketSelection onProceed={() => setStep(2)} />
       ) : (
-        <AttendeeDetails onRegister={handleRegister} /> // 
+        <AttendeeDetails onRegister={onRegister} /> 
       )}
     </div>
   );
