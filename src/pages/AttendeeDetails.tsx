@@ -15,8 +15,8 @@ interface ErrorsState {
 }
 
 interface AttendeeDetailsProps {
-    onRegister?: (formData: FormDataState) => void;
-}
+    onRegister: (data: string) => void;
+  }
 
 const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
     const navigate = useNavigate();

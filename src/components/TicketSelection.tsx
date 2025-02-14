@@ -41,12 +41,7 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
   const [quantity, setQuantity] = useState<number>(1);
   const [error, setError] = useState<string>("");
   const [touched, setTouched] = useState<boolean>(false);
-  const [formData, setFormData] = useState({
-    selectedOption: "",
-    name: "",
-    email: "",
-    image: "",
-  });
+ 
 
 
   const ticketTypes: TicketType[] = [

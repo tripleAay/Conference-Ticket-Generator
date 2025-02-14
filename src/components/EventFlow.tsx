@@ -1,12 +1,12 @@
-import { useState } from "react";
-import TicketSelection from "../components/TicketSelection";
 import AttendeeDetails from "../pages/AttendeeDetails";
+import TicketSelection from "../components/TicketSelection";
+import { useState } from "react";
 
 const EventFlow: React.FC = () => {
   const [step, setStep] = useState<number>(1);
 
-  const handleRegister = (): void => {
-    console.log("User registered");
+  const handleRegister = (data: any): void => {
+    console.log("User registered:", data);
   };
 
   return (
@@ -14,7 +14,7 @@ const EventFlow: React.FC = () => {
       {step === 1 ? (
         <TicketSelection onProceed={() => setStep(2)} />
       ) : (
-        <AttendeeDetails onRegister={handleRegister} /> 
+        <AttendeeDetails onRegister={handleRegister} /> // 
       )}
     </div>
   );
