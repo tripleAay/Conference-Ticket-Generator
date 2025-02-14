@@ -15,12 +15,12 @@ interface ErrorsState {
 }
 
 interface AttendeeDetailsProps {
-    onRegister: (data: FormDataState) => void;
+    onRegister?: (data: FormDataState) => void;
 }
 
 const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
     const navigate = useNavigate();
-    
+
     const [formData, setFormData] = useState<FormDataState>({
         name: "",
         email: "",
@@ -33,15 +33,17 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
     const [touched, setTouched] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        const ticketData = localStorage.getItem("ticketDetails");
-        const savedFormData = localStorage.getItem("attendeeFormData");
+        try {
+            const ticketData = localStorage.getItem("ticketDetails");
+            const savedFormData = localStorage.getItem("attendeeFormData");
 
-        if (ticketData || savedFormData) {
             setFormData(prev => ({
                 ...prev,
-                ...(ticketData ? { selectedOption: JSON.parse(ticketData).selectedTicket || null } : {}),
+                ...(ticketData ? { selectedOption: JSON.parse(ticketData)?.selectedTicket || null } : {}),
                 ...(savedFormData ? JSON.parse(savedFormData) : {})
             }));
+        } catch (error) {
+            console.error("Error parsing local storage data", error);
         }
     }, []);
 
@@ -127,7 +129,11 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         setErrors(validationErrors);
         if (Object.values(validationErrors).some(error => error)) return;
 
-        onRegister(formData);
+        if (onRegister) {
+            onRegister(formData);
+        } else {
+            console.error("onRegister function is not provided");
+        }
     };
 
     return (
@@ -151,10 +157,31 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
                 </div>
                 <div className="mb-4">
                     <label className="block text-sm text-gray-300 mb-1">Enter your name *</label>
-                    <input type="text" name="name" className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border" value={formData.name} onChange={handleChange} onBlur={handleBlur} />
+                    <input
+                        type="text"
+                        name="name"
+                        className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border"
+                        value={formData.name}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                    />
                     {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 </div>
-                <button type="submit" className="py-2 px-4 text-xs font-medium text-black rounded-md bg-[#1C8DA5] hover:bg-[#177A91]">Get My Free Ticket</button>
+                <div className="mb-4">
+                    <label className="block text-sm text-gray-300 mb-1">Enter your email *</label>
+                    <input
+                        type="email"
+                        name="email"
+                        className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border"
+                        value={formData.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                </div>
+                <button type="submit" className="py-2 px-4 text-xs font-medium text-black rounded-md bg-[#1C8DA5] hover:bg-[#177A91]">
+                    Get My Free Ticket
+                </button>
             </form>
         </div>
     );
