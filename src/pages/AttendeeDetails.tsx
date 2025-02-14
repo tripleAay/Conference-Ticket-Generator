@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
+
 
 interface FormDataState {
     name: string;
@@ -36,17 +38,17 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
         const loadSavedData = async () => {
             const ticketData = localStorage.getItem("ticketDetails");
             const savedFormData = localStorage.getItem("attendeeFormData");
-    
+
             setFormData(prev => ({
                 ...prev,
                 ...(ticketData ? { selectedOption: JSON.parse(ticketData).selectedTicket } : {}),
                 ...(savedFormData ? JSON.parse(savedFormData) : {})
             }));
         };
-    
+
         loadSavedData();
     }, []);
-    
+
 
     useEffect(() => {
         localStorage.setItem(
@@ -61,7 +63,7 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
 
     const validateField = (name: string, value: string | null): string => {
         if (!value) value = ""; // Handle null values
-    
+
         switch (name) {
             case "name":
                 return !value.trim() ? "Name is required" : "";
@@ -74,7 +76,7 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
                 return "";
         }
     };
-    
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -129,21 +131,21 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+
         let validationErrors: ErrorsState = {
             name: validateField("name", formData.name),
             email: validateField("email", formData.email),
         };
-    
+
         setErrors(validationErrors);
-    
+
         if (Object.values(validationErrors).some(error => error)) return; // Stop if there are errors
-    
+
         if (onRegister) {
             onRegister(formData);
         }
     };
-    
+
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen text-white px-6 mt-32">
@@ -192,13 +194,13 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
                 <textarea
-                        className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border border-[#1A3A4B]"
-                        value={formData.selectedOption || ""}
-                    
-                    />
+                    className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border border-[#1A3A4B]"
+                    value={formData.selectedOption || ""}
+
+                />
 
                 <div className="flex gap-3">
-                    <button onClick={()=> navigate("/")} type="button" className="flex-1 py-1.5 px-3 text-xs font-medium text-black rounded-md border border-gray-500 hover:bg-gray-700 transition-all">
+                    <button onClick={() => navigate("/")} type="button" className="flex-1 py-1.5 px-3 text-xs font-medium text-black rounded-md border border-gray-500 hover:bg-gray-700 transition-all">
                         Back
                     </button>
                     <button type="submit" className="flex-1 py-2 px-4 text-xs font-medium text-black rounded-md bg-[#1C8DA5] hover:bg-[#177A91] transition-all whitespace-nowrap">
