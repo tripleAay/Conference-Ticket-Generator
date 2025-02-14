@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import react, { useState, useEffect } from "react";
 import { Camera } from "lucide-react";
 import Barcode from "react-barcode";
 

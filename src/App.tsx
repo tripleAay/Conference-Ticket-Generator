@@ -4,7 +4,6 @@ import NavBar from "./components/NavBar";
 import TicketSelection from "./components/TicketSelection";
 import AttendeeDetails from "./pages/AttendeeDetails";
 import TicketReceipt from "./pages/TicketReceipt";
-import { BrowserRouter } from "react-router-dom";
 
 function App() {
   const [step, setStep] = useState(1);
