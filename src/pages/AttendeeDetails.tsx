@@ -11,17 +11,17 @@ const AttendeeDetails = ({ onRegister }) => {
     const [uploading, setUploading] = useState(false);
     const [touched, setTouched] = useState({});
 
-    // Load saved form data on component mount
+    
     useEffect(() => {
         const loadSavedData = async () => {
-            // Load ticket details from localStorage
+            
             const ticketData = localStorage.getItem("ticketDetails");
             if (ticketData) {
                 const { selectedTicket } = JSON.parse(ticketData);
                 setFormData(prev => ({ ...prev, selectedOption: selectedTicket }));
             }
 
-            // Load form data from localStorage
+           
             const savedFormData = localStorage.getItem("attendeeFormData");
             if (savedFormData) {
                 setFormData(prev => ({ ...prev, ...JSON.parse(savedFormData) }));
@@ -31,7 +31,7 @@ const AttendeeDetails = ({ onRegister }) => {
         loadSavedData();
     }, []);
 
-    // Save form data whenever it changes
+   
     useEffect(() => {
         localStorage.setItem("attendeeFormData", JSON.stringify({
             name: formData.name,
@@ -58,7 +58,7 @@ const AttendeeDetails = ({ onRegister }) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-        // Validate on change if field has been touched
+     
         if (touched[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -84,8 +84,8 @@ const AttendeeDetails = ({ onRegister }) => {
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("upload_preset", "ticket-gen"); // Replace with your Cloudinary upload preset
-        formData.append("cloud_name", "db5xd42ce"); // Replace with your Cloudinary cloud name
+        formData.append("upload_preset", "ticket-gen"); 
+        formData.append("cloud_name", "db5xd42ce");
 
         try {
             const response = await fetch("https://api.cloudinary.com/v1_1/db5xd42ce/image/upload", {
@@ -95,7 +95,7 @@ const AttendeeDetails = ({ onRegister }) => {
 
             const data = await response.json();
             if (data.secure_url) {
-                setFormData(prev => ({ ...prev, image: data.secure_url })); // Store Cloudinary image URL
+                setFormData(prev => ({ ...prev, image: data.secure_url }));
             } else {
                 setErrors(prev => ({ ...prev, image: "Failed to upload image" }));
             }
@@ -108,9 +108,9 @@ const AttendeeDetails = ({ onRegister }) => {
 
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault(); 
     
-        // Validate fields before submission
+    
         let validationErrors = {};
         Object.keys(formData).forEach((key) => {
             const error = validateField(key, formData[key]);
@@ -121,7 +121,7 @@ const AttendeeDetails = ({ onRegister }) => {
     
         if (Object.keys(validationErrors).length > 0) return;
     
-        // Call the onRegister function if validation passes
+        
         if (onRegister) {
             onRegister(formData);
         }

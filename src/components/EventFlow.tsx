@@ -3,11 +3,10 @@ import TicketSelection from "../components/TicketSelection";
 import AttendeeDetails from "../pages/AttendeeDetails";
 
 const EventFlow = () => {
-  const [step, setStep] = useState(1); // 1 for TicketSelection, 2 for AttendeeDetails
-
+  const [step, setStep] = useState(1); 
   const handleRegister = () => {
     console.log("User registered");
-    // Add any logic needed after registering an attendee
+   
   };
 
   return (
@@ -15,7 +14,7 @@ const EventFlow = () => {
       {step === 1 ? (
         <TicketSelection onProceed={() => setStep(2)} />
       ) : (
-        <AttendeeDetails onRegister={handleRegister} /> {/* Fix: Passing onRegister */}
+        <AttendeeDetails onRegister={handleRegister} /> 
       )}
     </div>
   );

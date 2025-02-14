@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-// Types
+
 interface TicketType {
   type: string;
   price: string;
@@ -12,7 +12,7 @@ interface TicketSelectionProps {
   onProceed: (ticketData: { selectedTicket: string; quantity: number; price: string }) => void;
 }
 
-// Event Card Component
+
 const EventCard = () => {
   return (
     <motion.div
@@ -43,7 +43,6 @@ const EventCard = () => {
   );
 };
 
-// Main TicketSelection Component
 const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
@@ -56,7 +55,7 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
     { type: "VVIP", price: "$150", left: 20 },
   ];
 
-  // Load saved ticket selection on component mount
+ 
   useEffect(() => {
     const savedTicketData = localStorage.getItem("ticketDetails");
     if (savedTicketData) {
@@ -73,7 +72,7 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
     }
   }, []);
 
-  // Save ticket selection whenever it changes
+  
   useEffect(() => {
     if (touched && selectedTicket) {
       const ticketData = {
