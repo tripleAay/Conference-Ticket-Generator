@@ -18,16 +18,17 @@ const TicketReceipt = () => {
     const savedFormData = localStorage.getItem("attendeeFormData");
     const savedTicketData = localStorage.getItem("ticketDetails");
     const savedTicketId = localStorage.getItem("ticketId");
-
-    const { selectedTicket, quantity, price } = JSON.parse(savedTicketData);
-
   
     if (savedFormData && savedTicketData) {
       const { name, email, image } = JSON.parse(savedFormData);
-      const { selectedTicket, ticketCount, ticketPrice } = JSON.parse(savedTicketData);
+      const ticketData = JSON.parse(savedTicketData); 
+      const { selectedTicket, quantity, price } = ticketData || {};
+  
       
       const ticketId = savedTicketId || "TCH" + Math.random().toString(36).substr(2, 9).toUpperCase();
-      localStorage.setItem("ticketId", ticketId);
+      if (!savedTicketId) {
+        localStorage.setItem("ticketId", ticketId);
+      }
   
       setUserData({
         name: name || "John Doe",
@@ -36,12 +37,11 @@ const TicketReceipt = () => {
         ticketType: selectedTicket || "REGULAR",
         ticketId: ticketId,
         ticketCount: quantity || 1,
-        totalAmount: quantity * (price.includes("$") ? parseInt(price.replace("$", "")) : 0), 
+        totalAmount: (quantity || 1) * (price?.includes("$") ? parseInt(price.replace("$", "")) : 0), 
       });
-      
     }
   }, []);
-
+  
   return (
     <div className="flex justify-center items-center min-h-screen text-white p-6 mt-32">
       <div className="bg-[#051b1b] p-6 rounded-2xl shadow-lg w-full max-w-lg border border-[#064d4d] relative">

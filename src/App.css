@@ -19,7 +19,7 @@ body, html {
   justify-content: center;
   width: 1200px;
   min-height: 700px; /* Ensures content expands if necessary */
-  padding: 20px; Adds spacing to prevent content from touching edges
+  padding: 20px; 
   box-sizing: border-box; /* Ensures padding doesn’t break layout */
 }
 .content-container {

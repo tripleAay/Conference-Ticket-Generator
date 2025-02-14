@@ -1,64 +1,85 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AttendeeDetails = ({ onRegister }) => {
-    const [formData, setFormData] = useState({
+interface FormDataState {
+    name: string;
+    email: string;
+    image: string | null;
+    selectedOption: string | null;
+}
+
+interface ErrorsState {
+    name?: string;
+    email?: string;
+    image?: string;
+}
+
+interface AttendeeDetailsProps {
+    onRegister?: (formData: FormDataState) => void;
+}
+
+const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState<FormDataState>({
         name: "",
         email: "",
         image: null,
         selectedOption: null
     });
-    const [errors, setErrors] = useState({});
-    const [uploading, setUploading] = useState(false);
-    const [touched, setTouched] = useState({});
 
-    
+    const [errors, setErrors] = useState<ErrorsState>({});
+    const [uploading, setUploading] = useState(false);
+    const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
+
     useEffect(() => {
         const loadSavedData = async () => {
-            
             const ticketData = localStorage.getItem("ticketDetails");
-            if (ticketData) {
-                const { selectedTicket } = JSON.parse(ticketData);
-                setFormData(prev => ({ ...prev, selectedOption: selectedTicket }));
-            }
-
-           
             const savedFormData = localStorage.getItem("attendeeFormData");
-            if (savedFormData) {
-                setFormData(prev => ({ ...prev, ...JSON.parse(savedFormData) }));
-            }
+    
+            setFormData(prev => ({
+                ...prev,
+                ...(ticketData ? { selectedOption: JSON.parse(ticketData).selectedTicket } : {}),
+                ...(savedFormData ? JSON.parse(savedFormData) : {})
+            }));
         };
-
+    
         loadSavedData();
     }, []);
+    
 
-   
     useEffect(() => {
-        localStorage.setItem("attendeeFormData", JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            image: formData.image
-        }));
+        localStorage.setItem(
+            "attendeeFormData",
+            JSON.stringify({
+                name: formData.name,
+                email: formData.email,
+                image: formData.image
+            })
+        );
     }, [formData]);
 
-    const validateField = (name, value) => {
+    const validateField = (name: string, value: string | null): string => {
+        if (!value) value = ""; // Handle null values
+    
         switch (name) {
-            case 'name':
-                return !value.trim() ? 'Name is required' : '';
-            case 'email':
+            case "name":
+                return !value.trim() ? "Name is required" : "";
+            case "email":
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!value.trim()) return 'Email is required';
-                if (!emailRegex.test(value)) return 'Invalid email format';
-                return '';
+                if (!value.trim()) return "Email is required";
+                if (!emailRegex.test(value)) return "Invalid email format";
+                return "";
             default:
-                return '';
+                return "";
         }
     };
+    
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-     
         if (touched[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -67,7 +88,7 @@ const AttendeeDetails = ({ onRegister }) => {
         }
     };
 
-    const handleBlur = (e) => {
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setTouched(prev => ({ ...prev, [name]: true }));
         setErrors(prev => ({
@@ -76,21 +97,21 @@ const AttendeeDetails = ({ onRegister }) => {
         }));
     };
 
-    const handleImageUpload = async (event) => {
-        const file = event.target.files[0];
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
         if (!file) return;
 
         setUploading(true);
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", "ticket-gen"); 
-        formData.append("cloud_name", "db5xd42ce");
+        const imageFormData = new FormData();
+        imageFormData.append("file", file);
+        imageFormData.append("upload_preset", "ticket-gen");
+        imageFormData.append("cloud_name", "db5xd42ce");
 
         try {
             const response = await fetch("https://api.cloudinary.com/v1_1/db5xd42ce/image/upload", {
                 method: "POST",
-                body: formData,
+                body: imageFormData,
             });
 
             const data = await response.json();
@@ -106,30 +127,23 @@ const AttendeeDetails = ({ onRegister }) => {
         }
     };
 
-
-    const handleSubmit = (e) => {
-        e.preventDefault(); 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
     
-    
-        let validationErrors = {};
-        Object.keys(formData).forEach((key) => {
-            const error = validateField(key, formData[key]);
-            if (error) validationErrors[key] = error;
-        });
+        let validationErrors: ErrorsState = {
+            name: validateField("name", formData.name),
+            email: validateField("email", formData.email),
+        };
     
         setErrors(validationErrors);
     
-        if (Object.keys(validationErrors).length > 0) return;
+        if (Object.values(validationErrors).some(error => error)) return; // Stop if there are errors
     
-        
         if (onRegister) {
             onRegister(formData);
         }
     };
     
-
-
-
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen text-white px-6 mt-32">
@@ -139,7 +153,6 @@ const AttendeeDetails = ({ onRegister }) => {
                     <span className="text-[#1C8DA5]">Step 2 of 3</span>
                 </div>
                 <hr className="border-t border-white w-full mb-4" />
-
 
                 <div className="flex flex-col items-center justify-center w-full bg-[#0D1F28] p-4 rounded-lg mb-4">
                     {formData.image ? (
@@ -178,24 +191,17 @@ const AttendeeDetails = ({ onRegister }) => {
                     />
                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
-
-                <div className="mb-4">
-                    <label className="block text-sm text-gray-300 mb-1">About the project</label>
-                    <textarea
+                <textarea
                         className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border border-[#1A3A4B]"
                         value={formData.selectedOption || ""}
-                        readOnly
+                    
                     />
-                </div>
 
                 <div className="flex gap-3">
-                    <button type="button" className="flex-1 py-1.5 px-3 text-xs font-medium text-black rounded-md border border-gray-500 hover:bg-gray-700 transition-all">
+                    <button onClick={()=> navigate("/")} type="button" className="flex-1 py-1.5 px-3 text-xs font-medium text-black rounded-md border border-gray-500 hover:bg-gray-700 transition-all">
                         Back
                     </button>
-                    <button
-                        type="submit"
-                        className="flex-1 py-2 px-4 text-xs font-medium text-black rounded-md bg-[#1C8DA5] hover:bg-[#177A91] transition-all whitespace-nowrap"
-                    >
+                    <button type="submit" className="flex-1 py-2 px-4 text-xs font-medium text-black rounded-md bg-[#1C8DA5] hover:bg-[#177A91] transition-all whitespace-nowrap">
                         Get My Free Ticket
                     </button>
                 </div>
@@ -204,4 +210,4 @@ const AttendeeDetails = ({ onRegister }) => {
     );
 };
 
-export default AttendeeDetails;
+export default AttendeeDetails; 

@@ -131,13 +131,6 @@ const TicketSelection: React.FC<TicketSelectionProps> = ({ onProceed }) => {
     }
   };
 
-  const handleCancel = () => {
-    setSelectedTicket(null);
-    setQuantity(1);
-    setError("");
-    setTouched(false);
-    localStorage.removeItem("ticketDetails");
-  };
 
   return (
     <div className="h-screen flex flex-col items-center text-left justify-center bg-[#020C14] px-4 w-[700px] mt-32 border border-[#175050] rounded-lg bg-[#051b1b] text-white shadow-lg transition-all duration-300 ease-in-out">
