@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 interface FormDataState {
     name: string;
     email: string;
@@ -35,34 +33,24 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
     const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
-        const loadSavedData = async () => {
-            const ticketData = localStorage.getItem("ticketDetails");
-            const savedFormData = localStorage.getItem("attendeeFormData");
+        const ticketData = localStorage.getItem("ticketDetails");
+        const savedFormData = localStorage.getItem("attendeeFormData");
 
+        if (ticketData || savedFormData) {
             setFormData(prev => ({
                 ...prev,
-                ...(ticketData ? { selectedOption: JSON.parse(ticketData).selectedTicket } : {}),
+                ...(ticketData ? { selectedOption: JSON.parse(ticketData).selectedTicket || null } : {}),
                 ...(savedFormData ? JSON.parse(savedFormData) : {})
             }));
-        };
-
-        loadSavedData();
+        }
     }, []);
 
-
     useEffect(() => {
-        localStorage.setItem(
-            "attendeeFormData",
-            JSON.stringify({
-                name: formData.name,
-                email: formData.email,
-                image: formData.image
-            })
-        );
+        localStorage.setItem("attendeeFormData", JSON.stringify(formData));
     }, [formData]);
 
     const validateField = (name: string, value: string | null): string => {
-        if (!value) value = ""; // Handle null values
+        if (!value) value = "";
 
         switch (name) {
             case "name":
@@ -76,7 +64,6 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
                 return "";
         }
     };
-
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -132,26 +119,25 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        let validationErrors: ErrorsState = {
+        const validationErrors: ErrorsState = {
             name: validateField("name", formData.name),
             email: validateField("email", formData.email),
         };
 
         setErrors(validationErrors);
 
-        if (Object.values(validationErrors).some(error => error)) return; // Stop if there are errors
+        if (Object.values(validationErrors).some(error => error)) return;
 
         if (onRegister) {
             onRegister(formData);
         }
     };
 
-
     return (
         <div className="flex flex-col items-center justify-center min-h-screen text-white px-6 mt-32">
             <form onSubmit={handleSubmit} className="w-full max-w-lg bg-[#051b1b] p-6 rounded-2xl shadow-lg border border-[#064d4d]">
                 <div className="flex items-center justify-between w-full">
-                    <h2 className="text-lg font-semibold"> Attendee Details</h2>
+                    <h2 className="text-lg font-semibold">Attendee Details</h2>
                     <span className="text-[#1C8DA5]">Step 2 of 3</span>
                 </div>
                 <hr className="border-t border-white w-full mb-4" />
@@ -193,11 +179,14 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
                     />
                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
-                <textarea
-                    className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border border-[#1A3A4B]"
-                    value={formData.selectedOption || ""}
 
-                />
+                <div className="mb-4">
+                    <textarea
+                        className="w-full px-4 py-3 rounded-lg bg-[#18343D] text-white border border-[#1A3A4B]"
+                        value={formData.selectedOption || ""}
+                        readOnly
+                    />
+                </div>
 
                 <div className="flex gap-3">
                     <button onClick={() => navigate("/")} type="button" className="flex-1 py-1.5 px-3 text-xs font-medium text-black rounded-md border border-gray-500 hover:bg-gray-700 transition-all">
@@ -212,4 +201,4 @@ const AttendeeDetails: React.FC<AttendeeDetailsProps> = ({ onRegister }) => {
     );
 };
 
-export default AttendeeDetails; 
+export default AttendeeDetails;
