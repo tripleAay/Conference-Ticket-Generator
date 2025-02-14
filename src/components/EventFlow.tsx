@@ -3,9 +3,9 @@ import TicketSelection from "../components/TicketSelection";
 import AttendeeDetails from "../pages/AttendeeDetails";
 
 const EventFlow: React.FC = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
 
-  const handleRegister = () => {
+  const handleRegister = (): void => {
     console.log("User registered");
   };
 
